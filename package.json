@@ -1,0 +1,13 @@
+{
+  "name": "safecircle", "private": true, "version": "0.1.0",
+  "engines": {"node": ">=22"}, "workspaces": ["apps/api", "apps/web", "packages/contracts"],
+  "scripts": {
+    "setup:local": "node scripts/setup-local.mjs",
+    "dev": "concurrently -k -n API,WEB \"npm run dev -w @safecircle/api\" \"npm run dev -w @safecircle/web\"",
+    "dev:api": "npm run dev -w @safecircle/api", "dev:web": "npm run dev -w @safecircle/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w @safecircle/api", "build": "npm run build -w @safecircle/web",
+    "db:migrate": "npm run db:migrate -w @safecircle/api"
+  },
+  "devDependencies": {"typescript": "^5.9.3", "@types/node": "^24.0.0", "concurrently": "^9.2.0"}
+}

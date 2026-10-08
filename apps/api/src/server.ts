@@ -1,0 +1,12 @@
+import { readConfig } from './config.js';
+import { buildApp } from './app.js';
+import { MemoryStore } from './store.js';
+import { PostgresStore } from './postgres-store.js';
+import { seedSyntheticStaff } from './staff-fixtures.js';
+const c=readConfig(process.env);
+const store=c.STORE_MODE==='memory'?new MemoryStore():new PostgresStore(c.DATABASE_URL!);
+if(process.env.SYNTHETIC_STAFF_FIXTURES==='true')await seedSyntheticStaff(store,process.env);
+const app=await buildApp({store,encryptionKey:c.FIELD_ENCRYPTION_KEY,hashKey:c.TOKEN_HASH_KEY,origin:c.WEB_ORIGIN,production:c.NODE_ENV==='production'});
+await app.listen({host:'127.0.0.1',port:c.PORT});
+console.log(`SafeCircle API on port ${c.PORT}. Development service: synthetic data only. Storage: ${c.STORE_MODE}.`);
+for(const signal of ['SIGTERM','SIGINT'] as const)process.once(signal,()=>void app.close().then(()=>process.exit(0)));
